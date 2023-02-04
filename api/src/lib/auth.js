@@ -20,13 +20,9 @@ import { db } from './db'
  * seen if someone were to open the Web Inspector in their browser.
  */
 export const getCurrentUser = async (session) => {
-  if (!session || typeof session.id !== 'number') {
-    throw new Error('Invalid session')
-  }
-
   return await db.user.findUnique({
     where: { id: session.id },
-    select: { id: true, email: true },
+    select: { id: true, email: true, roles: true },
   })
 }
 
@@ -85,20 +81,6 @@ export const hasRole = (roles) => {
   return false
 }
 
-/**
- * Use requireAuth in your services to check that a user is logged in,
- * whether or not they are assigned a role, and optionally raise an
- * error if they're not.
- *
- * @param roles: {@link AllowedRoles} - When checking role membership, these roles grant access.
- *
- * @returns - If the currentUser is authenticated (and assigned one of the given roles)
- *
- * @throws {@link AuthenticationError} - If the currentUser is not authenticated
- * @throws {@link ForbiddenError} If the currentUser is not allowed due to role permissions
- *
- * @see https://github.com/redwoodjs/redwood/tree/main/packages/auth for examples
- */
 export const requireAuth = ({ roles } = {}) => {
   if (!isAuthenticated()) {
     throw new AuthenticationError("You don't have permission to do that.")
