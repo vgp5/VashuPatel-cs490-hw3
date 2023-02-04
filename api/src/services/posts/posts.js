@@ -1,18 +1,8 @@
 import { db } from 'src/lib/db'
 
-export const posts = () => {
-  return db.post.findMany()
-}
-
-export const post = ({ id }) => {
-  return db.post.findUnique({
-    where: { id },
-  })
-}
-
 export const createPost = ({ input }) => {
   return db.post.create({
-    data: input,
+    data: { ...input, userId: context.currentUser.id },
   })
 }
 
